@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>凯利公式 - 以损定量计算器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind 配置 - 酷炫风格配色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00F0FF', // 霓虹蓝
+                        secondary: '#FF2A6D', // 霓虹粉
+                        accent: '#9D4EDD', // 紫色
+                        dark: '#0F172A', // 深蓝黑色
+                        darker: '#0A0F1C', // 更深的背景色
+                        light: '#F1F5F9',
+                    },
+                    fontFamily: {
+                        sans: ['Orbitron', 'Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { 'box-shadow': '0 0 5px rgba(0, 240, 255, 0.5)' },
+                            '100%': { 'box-shadow': '0 0 20px rgba(0, 240, 255, 0.8)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 引入现代字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
+            }
+            .text-shadow-pink {
+                text-shadow: 0 0 8px rgba(255, 42, 109, 0.7);
+            }
+            .border-glow {
+                box-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 
+                            inset 0 0 5px rgba(0, 240, 255, 0.3);
+            }
+            .border-glow-pink {
+                box-shadow: 0 0 10px rgba(255, 42, 109, 0.5), 
+                            inset 0 0 5px rgba(255, 42, 109, 0.3);
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            }
+            .card-gradient {
+                background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+            }
+            .input-focus {
+                @apply focus:ring-2 focus:ring-primary/70 focus:border-primary focus:outline-none;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50;
+            }
+            .btn-primary {
+                @apply bg-primary/10 border border-primary text-primary font-medium py-2 px-6 rounded-lg transition-all duration-300 hover:bg-primary/20 active:bg-primary/30 focus:ring-2 focus:ring-primary/50 focus:outline-none animate-pulse-slow;
+            }
+            .btn-secondary {
+                @apply bg-secondary/10 border border-secondary text-secondary font-medium py-2 px-6 rounded-lg transition-all duration-300 hover:bg-secondary/20 active:bg-secondary/30 focus:ring-2 focus:ring-secondary/50 focus:outline-none;
+            }
+            .readonly-input {
+                @apply bg-dark/50 cursor-not-allowed;
+            }
+            .collapse-content {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease-out;
+            }
+            .collapse-open .collapse-content {
+                max-height: 500px;
+                transition: max-height 0.5s ease-in;
+            }
+            .rotate-icon {
+                transition: transform 0.3s ease;
+            }
+            .collapse-open .rotate-icon {
+                transform: rotate(180deg);
+            }
+        }
+    </style>
+</head>
+<body class="bg-darker font-sans text-light min-h-screen">
+    <!-- 背景装饰元素 -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full filter blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/5 rounded-full filter blur-3xl"></div>
+    </div>
+
+    <!-- 导航栏 -->
+    <header class="bg-dark/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-calculator text-primary text-2xl animate-pulse-slow"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-white font-orbitron text-shadow">凯利公式计算器</h1>
+            </div>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="#calculator" class="text-gray-300 hover:text-primary transition-colors duration-300">计算器</a></li>
+                    <li><a href="#explanation" class="text-gray-300 hover:text-primary transition-colors duration-300">公式说明</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12 relative z-10">
+        <!-- 介绍部分 -->
+        <section class="text-center mb-12 max-w-3xl mx-auto">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4 text-white font-orbitron text-shadow">以损定量计算工具</h2>
+			<h3 class="text-[clamp(1.2rem,2vw,2rem)] font-bold mb-6 text-secondary font-orbitron text-shadow-pink">By JavinLee</h3>
+            <p class="text-gray-300 text-lg">基于凯利公式，帮助您在投资和交易中科学地确定每次投注的最佳比例，实现风险与收益的平衡。</p>
+        </section>
+
+        <!-- 计算器部分 -->
+        <section id="calculator" class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-16">
+            <!-- 输入表单 -->
+            <div class="lg:col-span-3 bg-dark border border-primary/20 rounded-xl shadow-lg shadow-primary/5 p-6 md:p-8 card-hover">
+                <h3 class="text-xl font-bold mb-6 flex items-center font-orbitron text-primary">
+                    <i class="fa fa-sliders mr-2"></i>参数设置
+                </h3>
+                
+                <form id="kellyForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="principal" class="block text-sm font-medium text-gray-300">本金 (元)</label>
+                            <input type="number" id="principal" name="principal" min="0" step="0.01" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                placeholder="例如：10000">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="maxLoss" class="block text-sm font-medium text-gray-300">最大可承受亏损 (元)</label>
+                            <input type="number" id="maxLoss" name="maxLoss" min="0" step="0.01" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                placeholder="例如：2000">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="winProb" class="block text-sm font-medium text-gray-300">盈利概率 (%)</label>
+                            <input type="number" id="winProb" name="winProb" min="0" max="100" step="0.01" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                placeholder="例如：60">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="lossProb" class="block text-sm font-medium text-gray-300">亏损概率 (%)</label>
+                            <input type="number" id="lossProb" name="lossProb" min="0" max="100" step="0.01" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                placeholder="例如：40">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="winPercent" class="block text-sm font-medium text-gray-300">盈利百分比 (%)</label>
+                            <input type="number" id="winPercent" name="winPercent" min="0" step="0.01" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                placeholder="例如：10">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="lossPercent" class="block text-sm font-medium text-gray-300">亏损百分比 (%)</label>
+                            <input type="number" id="lossPercent" name="lossPercent" min="0.01" step="0.01" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                placeholder="例如：5">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="riskReward" class="block text-sm font-medium text-gray-300">盈亏比</label>
+                            <input type="number" id="riskReward" name="riskReward" min="0" step="0.01" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus readonly-input text-white"
+                                placeholder="自动计算" readonly>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="leverage" class="block text-sm font-medium text-gray-300">杠杆倍数</label>
+                            <input type="number" id="leverage" name="leverage" min="1" step="0.1" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                placeholder="例如：5，1表示无杠杆">
+                        </div>
+                        
+                        <div class="space-y-2 md:col-span-2">
+                            <label for="maxStopLossTimes" class="block text-sm font-medium text-gray-300">最大连续止损次数</label>
+                            <input type="number" id="maxStopLossTimes" name="maxStopLossTimes" min="1" step="1" required
+                                class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                placeholder="例如：5">
+                        </div>
+                    </div>
+                    
+                    <!-- 高级设置（可折叠） -->
+                    <div class="border-t border-primary/20 pt-4 mt-2">
+                        <div id="advancedSettingsToggle" class="flex justify-between items-center cursor-pointer">
+                            <h4 class="text-lg font-semibold text-gray-200 flex items-center font-orbitron">
+                                <i class="fa fa-cog text-accent mr-2"></i>高级设置
+                            </h4>
+                            <i class="fa fa-chevron-down text-primary rotate-icon transition-transform duration-300"></i>
+                        </div>
+                        
+                        <div class="collapse-content mt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <label for="instrument" class="block text-sm font-medium text-gray-300">投资品种</label>
+                                    <select id="instrument" name="instrument" 
+                                        class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white">
+                                        <option value="">空值</option>
+                                        <option value="BTCUSD">BTCUSD（比特币）</option>
+                                        <option value="XAUUSD">XAUUSD（黄金）</option>
+                                        <option value="XBRUSD">XBRUSD（原油）</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <label for="currentPrice" class="block text-sm font-medium text-gray-300">当前价格</label>
+                                    <input type="number" id="currentPrice" name="currentPrice" min="0.01" step="0.01" 
+                                        class="w-full px-4 py-3 bg-darker border border-primary/30 rounded-lg input-focus text-white"
+                                        placeholder="例如：30000.50">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 text-center">
+                        <button type="submit" class="btn-primary font-orbitron">
+                            <i class="fa fa-calculator mr-2"></i>计算最佳比例
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- 结果展示 -->
+            <div class="lg:col-span-2 space-y-6">
+                <div id="resultCard" class="bg-dark border border-secondary/20 rounded-xl shadow-lg shadow-secondary/5 p-6 md:p-8 card-hover hidden">
+                    <h3 class="text-xl font-bold mb-6 flex items-center font-orbitron text-secondary">
+                        <i class="fa fa-bar-chart mr-2"></i>计算结果
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                <p class="text-sm text-gray-400">最佳投注比例</p>
+                                <p id="kellyPercentage" class="text-2xl font-bold text-primary font-orbitron">0%</p>
+                            </div>
+                            
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                <p class="text-sm text-gray-400">杠杆后投入金额</p>
+                                <p id="optimalBet" class="text-2xl font-bold text-primary font-orbitron">¥0</p>
+                            </div>
+                            
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                <p class="text-sm text-gray-400">实际投入保证金</p>
+                                <p id="actualInvestment" class="text-2xl font-bold text-accent font-orbitron">¥0</p>
+                            </div>
+                            
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                <p class="text-sm text-gray-400">单次亏损金额</p>
+                                <p id="singleLossAmount" class="text-2xl font-bold text-secondary font-orbitron">¥0</p>
+                            </div>
+                            
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                <p class="text-sm text-gray-400">最大连续亏损</p>
+                                <p id="maxConsecutiveLoss" class="text-2xl font-bold text-secondary font-orbitron">¥0</p>
+                            </div>
+                            
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                <p class="text-sm text-gray-400">剩余本金比例</p>
+                                <p id="remainingCapital" class="text-2xl font-bold text-primary font-orbitron">0%</p>
+                            </div>
+                            
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow col-span-2">
+                                <p class="text-sm text-gray-400">最大连续止损次数的概率</p>
+                                <p id="consecutiveLossProbability" class="text-2xl font-bold text-accent font-orbitron">0%</p>
+                            </div>
+                            
+                            <!-- 投资品种相关结果 -->
+                            <div id="instrumentResults" class="grid grid-cols-2 gap-4 w-full col-span-2">
+                              <div  class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                  <p class="text-sm text-gray-400">投资品种</p>
+                                  <p id="resultInstrument" class="text-2xl font-bold text-primary font-orbitron">-</p>
+                              </div>
+                              
+                              <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                  <p class="text-sm text-gray-400">品种价格</p>
+                                  <p id="resultPrice" class="text-2xl font-bold text-primary font-orbitron">-</p>
+                              </div>
+                              
+                              <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                  <p class="text-sm text-gray-400">以损定量手数</p>
+                                  <p id="positionSize" class="text-2xl font-bold text-secondary font-orbitron">-</p>
+                                  <p id="lotSizeWarning" class="text-xs text-secondary mt-1 hidden">提示：手数已调整至最低0.01手</p>
+                              </div>
+                              
+                              <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                                  <p class="text-sm text-gray-400">当前手数保证金</p>
+                                  <p id="lotMargin" class="text-2xl font-bold text-accent font-orbitron">-</p>
+                              </div>
+                              
+                              <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow col-span-2">
+                                  <p class="text-sm text-gray-400">以损定量手数计算公式</p>
+                                  <p id="calculationFormula" class="text-xs text-gray-400 mt-1 italic">计算公式：根据所选品种不同而变化</p>
+                              </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark/50 border-l-4 border-primary p-4 rounded-lg">
+                            <h4 class="font-medium text-primary mb-2 font-orbitron">建议</h4>
+                            <p id="recommendation" class="text-gray-300 text-sm"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-dark border border-primary/20 rounded-xl shadow-lg shadow-primary/5 p-6 md:p-8 card-hover">
+                    <h3 class="text-xl font-bold mb-4 flex items-center font-orbitron text-primary">
+                        <i class="fa fa-lightbulb-o mr-2"></i>使用提示
+                    </h3>
+                    <ul class="space-y-3 text-gray-300 text-sm">
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                            <span>盈利概率与亏损概率之和应为100%</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                            <span>盈亏比将根据盈利百分比和亏损百分比自动计算</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                            <span>杠杆后投入金额 = 单次亏损金额 ÷ 亏损百分比 ÷ 最佳比例</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                            <span>实际投入保证金 = 杠杆后投入金额 ÷ 杠杆倍数（且不超过本金）</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                            <span>最大连续止损次数的概率 = (亏损概率)^(最大连续止损次数)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                            <span>所有计算手数的结果不会低于0.01手</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 公式说明部分 -->
+        <section id="explanation" class="bg-dark border border-primary/20 rounded-xl shadow-lg shadow-primary/5 p-6 md:p-8 mb-16">
+            <h3 class="text-2xl font-bold mb-6 text-white font-orbitron text-shadow">凯利公式与以损定量</h3>
+            
+            <div class="space-y-6 text-gray-300">
+                <div>
+                    <h4 class="text-xl font-semibold mb-3 text-primary font-orbitron">凯利公式</h4>
+                    <p class="mb-4">凯利公式是一个用于确定最佳投注比例的数学公式，旨在最大化长期增长率同时控制风险。其基本公式为：</p>
+                    <div class="bg-darker border border-primary/20 p-4 rounded-lg text-center mb-4 border-glow">
+                        <p class="text-lg font-medium text-white font-orbitron">f* = (p×b - q) ÷ b</p>
+                    </div>
+                    <p>其中：</p>
+                    <ul class="list-disc pl-6 space-y-1 mt-2">
+                        <li>f* 是最佳投注比例（占总资金的比例）</li>
+                        <li>p 是盈利概率</li>
+                        <li>q 是亏损概率（q = 1 - p）</li>
+                        <li>b 是盈亏比（盈利金额/亏损金额）</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-xl font-semibold mb-3 text-primary font-orbitron">核心计算公式</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <p>杠杆后投入金额计算公式：</p>
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg text-center mt-2 border-glow">
+                                <p class="text-lg font-medium text-white font-orbitron">杠杆后投入金额 = 单次亏损金额 ÷ 亏损百分比 ÷ 最佳比例</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p>实际投入保证金计算公式：</p>
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg text-center mt-2 border-glow">
+                                <p class="text-lg font-medium text-white font-orbitron">实际投入保证金 = 杠杆后投入金额 ÷ 杠杆倍数</p>
+                                <p class="text-sm text-gray-400 mt-1">（且实际投入保证金 ≤ 本金）</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p>单次亏损金额计算公式：</p>
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg text-center mt-2 border-glow">
+                                <p class="text-lg font-medium text-white font-orbitron">单次亏损金额 = 最大可承受亏损 ÷ 最大连续止损次数</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <p>以损定量手数计算公式：</p>
+                            <div class="bg-darker border border-primary/20 p-4 rounded-lg text-left mt-2 pl-4 border-glow">
+                                <p class="text-lg font-medium text-white font-orbitron">• BTCUSD：实际投入保证金 ÷ （品种当前价格 ÷ 杠杆倍数）</p>
+                                <p class="text-lg font-medium text-white font-orbitron mt-2">• XAUUSD（黄金）、XBRUSD（原油）：实际投入保证金 ÷ 品种当前价格</p>
+                                <p class="text-sm text-gray-400 mt-2">注：计算结果不会低于0.01手</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-xl font-semibold mb-3 text-primary font-orbitron">计算示例</h4>
+                    <div class="bg-darker border border-primary/20 p-4 rounded-lg border-glow">
+                        <p class="font-medium text-white mb-2">比特币（BTCUSD）示例：</p>
+                        <ul class="list-disc pl-6 space-y-1 mb-4">
+                            <li>本金 = 10,000元</li>
+                            <li>最大可承受亏损 = 2,000元</li>
+                            <li>最大连续止损次数 = 5次</li>
+                            <li>亏损概率 = 40%（0.4）</li>
+                            <li>最佳投注比例 = 10%（0.1）</li>
+                            <li>亏损百分比 = 5%（0.05）</li>
+                            <li>杠杆倍数 = 5倍</li>
+                            <li>当前价格 = 30,000美元</li>
+                        </ul>
+                        
+                        <p class="font-medium text-white mb-2">计算过程：</p>
+                        <ul class="list-disc pl-6 space-y-1">
+                            <li>单次亏损金额 = 2,000 ÷ 5 = 400元</li>
+                            <li>杠杆后投入金额 = 400 ÷ 0.05 ÷ 0.1 = 80,000元</li>
+                            <li>实际投入保证金 = 80,000 ÷ 5 = 16,000元（但受限于本金10,000元）</li>
+                            <li>以损定量手数 = 10,000 ÷ （30,000 ÷ 5） = 1.67手</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark border-t border-primary/20 py-8 relative z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa fa-calculator text-primary text-xl animate-pulse-slow"></i>
+                        <span class="font-bold text-white font-orbitron">凯利公式计算器</span>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-1">科学管理风险，优化投资决策</p>
+                </div>
+                
+                <div class="text-gray-500 text-sm">
+                    &copy; 2025 凯利公式计算器 | 仅供参考，不构成投资建议 | version:1.2
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 通知提示组件 -->
+    <div id="toast" class="fixed bottom-6 right-6 px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-2 z-50"></div>
+
+    <script>
+        // 页面滚动时导航栏样式变化
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 10) {
+                navbar.classList.add('py-2', 'shadow-lg', 'shadow-primary/10');
+                navbar.classList.remove('py-4');
+            } else {
+                navbar.classList.add('py-4');
+                navbar.classList.remove('py-2', 'shadow-lg', 'shadow-primary/10');
+            }
+        });
+
+        // 高级设置折叠功能
+        document.getElementById('advancedSettingsToggle').addEventListener('click', function() {
+            this.parentElement.classList.toggle('collapse-open');
+        });
+
+        // 获取DOM元素
+        const winPercentInput = document.getElementById('winPercent');
+        const lossPercentInput = document.getElementById('lossPercent');
+        const riskRewardInput = document.getElementById('riskReward');
+        const instrumentSelect = document.getElementById('instrument');
+        const currentPriceInput = document.getElementById('currentPrice');
+        
+        // 自动计算盈亏比
+        function calculateRiskReward() {
+            const winPercent = parseFloat(winPercentInput.value) || 0;
+            const lossPercent = parseFloat(lossPercentInput.value) || 0;
+            
+            // 避免除以零错误
+            if (lossPercent > 0) {
+                const riskReward = winPercent / lossPercent;
+                riskRewardInput.value = riskReward.toFixed(2);
+            } else {
+                riskRewardInput.value = '';
+            }
+        }
+        
+        // 监听盈利百分比和亏损百分比的变化，自动计算盈亏比
+        winPercentInput.addEventListener('input', calculateRiskReward);
+        lossPercentInput.addEventListener('input', calculateRiskReward);
+
+        // 表单提交处理
+        document.getElementById('kellyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单数据
+            const formData = {
+                principal: parseFloat(document.getElementById('principal').value),
+                maxLoss: parseFloat(document.getElementById('maxLoss').value),
+                winProb: parseFloat(document.getElementById('winProb').value) / 100,
+                lossProb: parseFloat(document.getElementById('lossProb').value) / 100,
+                winPercent: parseFloat(document.getElementById('winPercent').value) / 100,
+                lossPercent: parseFloat(document.getElementById('lossPercent').value) / 100,
+                riskReward: parseFloat(document.getElementById('riskReward').value),
+                leverage: parseFloat(document.getElementById('leverage').value),
+                maxStopLossTimes: parseInt(document.getElementById('maxStopLossTimes').value),
+                instrument: instrumentSelect.value,
+                currentPrice: parseFloat(currentPriceInput.value) || 0
+            };
+            
+            // 简单验证
+            if (Math.abs((formData.winProb + formData.lossProb) - 1) > 0.01) {
+                showToast('盈利概率与亏损概率之和应接近100%', 'warning');
+            }
+            
+            if (formData.leverage < 1) {
+                showToast('杠杆倍数不能小于1', 'error');
+                return;
+            }
+            
+            if (isNaN(formData.riskReward) || formData.riskReward <= 0) {
+                showToast('请输入有效的盈利百分比和亏损百分比以计算盈亏比', 'error');
+                return;
+            }
+            
+            // 如果选择了投资品种但未输入价格
+            if (formData.instrument && formData.currentPrice <= 0) {
+                showToast('请输入投资品种的当前价格', 'warning');
+            }
+            
+            // 计算凯利比例
+            const kellyResult = calculateKelly(formData);
+            
+            // 检查实际投入保证金是否超过本金
+            if (kellyResult.actualInvestment > formData.principal) {
+                showToast('警告：计算得出的实际投入保证金超过本金，已自动调整为最大可承受金额', 'warning');
+            }
+            
+            // 显示结果
+            displayResults(formData, kellyResult);
+            
+            // 显示结果卡片并添加动画
+            const resultCard = document.getElementById('resultCard');
+            resultCard.classList.remove('hidden');
+            resultCard.classList.add('animate-glow');
+            setTimeout(() => {
+                resultCard.classList.remove('animate-glow');
+            }, 2000);
+            
+            // 平滑滚动到结果区域
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            showToast('计算完成', 'success');
+        });
+
+        // 凯利公式计算
+        function calculateKelly(data) {
+            // 凯利公式: f* = (p×b - q) ÷ b
+            const p = data.winProb;  // 盈利概率
+            const q = data.lossProb; // 亏损概率
+            const b = data.riskReward; // 盈亏比
+            
+            // 计算最佳比例 (转换为小数形式)
+            let kellyPercentage = (p * b - q) / b;
+            
+            // 确保比例不为负
+            kellyPercentage = Math.max(0, kellyPercentage);
+            
+            // 计算单次亏损金额 = 最大可承受亏损 ÷ 最大连续止损次数
+            const singleLossAmount = data.maxLoss / data.maxStopLossTimes;
+            
+            // 计算杠杆后投入金额 = 单次亏损金额 ÷ 亏损百分比 ÷ 最佳比例
+            // 处理最佳比例或亏损百分比为0的情况，避免除以零
+            let optimalBet;
+            if (kellyPercentage > 0 && data.lossPercent > 0) {
+                optimalBet = singleLossAmount / data.lossPercent / kellyPercentage;
+            } else {
+                optimalBet = 0;
+            }
+            
+            // 计算实际投入保证金 = 杠杆后投入金额 ÷ 杠杆倍数
+            let actualInvestment;
+            if (data.leverage > 0) {
+                actualInvestment = optimalBet / data.leverage;
+            } else {
+                actualInvestment = 0;
+            }
+            
+            // 确保实际投入保证金不超过本金
+            actualInvestment = Math.min(actualInvestment, data.principal);
+            
+            // 重新计算杠杆后投入金额，确保与实际投入保证金一致
+            optimalBet = actualInvestment * data.leverage;
+            
+            // 计算最大连续亏损
+            const maxConsecutiveLoss = singleLossAmount * data.maxStopLossTimes;
+            
+            // 计算剩余本金比例
+            const remainingCapitalPercent = ((data.principal - maxConsecutiveLoss) / data.principal) * 100;
+            
+            // 计算最大连续止损次数的概率 = (亏损概率)^(最大连续止损次数)
+            const consecutiveLossProbability = Math.pow(q, data.maxStopLossTimes) * 100;
+            
+            // 计算以损定量手数，根据品种使用不同公式
+            let positionSize = 0;
+            let formulaText = "";
+            let isAdjusted = false;
+            const minLotSize = 0.01;
+            
+            if (data.instrument && data.currentPrice > 0) {
+                if (data.instrument === "XAUUSD" || data.instrument === "XBRUSD") {
+                    // XAUUSD和XBRUSD公式：实际投入保证金 ÷ 品种当前价格
+                    const denominator = data.currentPrice;
+                    formulaText = "实际投入保证金 ÷ 品种当前价格";
+                    if (denominator > 0) {
+                        positionSize = actualInvestment / denominator;
+                    }
+                } else {
+                    // 其他品种（如BTCUSD）公式：实际投入保证金 ÷ （品种当前价格 ÷ 杠杆倍数）
+                    const denominator = data.currentPrice / data.leverage;
+                    formulaText = "实际投入保证金 ÷ （品种当前价格 ÷ 杠杆倍数）";
+                    if (denominator > 0) {
+                        positionSize = actualInvestment / denominator;
+                    }
+                }
+                
+                // 确保手数不低于0.01
+                if (positionSize < minLotSize) {
+                    positionSize = minLotSize;
+                    isAdjusted = true;
+                }
+            }
+            
+            // 计算当前手数的保证金
+            let lotMargin = 0;
+            if (data.instrument && data.currentPrice > 0 && positionSize > 0) {
+                if (data.instrument === "XAUUSD" || data.instrument === "XBRUSD") {
+                    // XAUUSD和XBRUSD保证金公式：手数 × 品种当前价格
+                    lotMargin = positionSize * data.currentPrice;
+                } else {
+                    // 其他品种保证金公式：(手数 × 品种当前价格) ÷ 杠杆倍数
+                    lotMargin = (positionSize * data.currentPrice) / data.leverage;
+                }
+            }
+            
+            // 生成建议
+            let recommendation = '';
+            if (kellyPercentage === 0) {
+                recommendation = '根据计算结果，不建议进行此项投资或投注，预期为负收益。';
+            } else if (kellyPercentage < 0.05) {
+                recommendation = '建议投入资金的比例较小，可适当增加投入以提高潜在收益，但需注意风险控制。';
+            } else if (kellyPercentage < 0.2) {
+                recommendation = '当前比例较为合理，符合风险与收益的平衡。';
+            } else {
+                recommendation = '计算结果显示比例较高，风险较大。建议谨慎操作，密切关注市场变化。';
+            }
+            
+            // 添加关于连续止损概率的建议
+            if (consecutiveLossProbability > 5) {
+                recommendation += ` 连续${data.maxStopLossTimes}次止损的概率为${consecutiveLossProbability.toFixed(2)}%，属于相对较高概率事件，请注意风险控制。`;
+            } else if (consecutiveLossProbability > 1) {
+                recommendation += ` 连续${data.maxStopLossTimes}次止损的概率为${consecutiveLossProbability.toFixed(2)}%，仍有一定可能性发生。`;
+            } else {
+                recommendation += ` 连续${data.maxStopLossTimes}次止损的概率较低（${consecutiveLossProbability.toFixed(2)}%），但仍需保持警惕。`;
+            }
+            
+            // 杠杆相关建议
+            if (data.leverage > 1) {
+                recommendation += ` 您使用了${data.leverage}倍杠杆，请注意杠杆会同时放大收益和风险，请确保您能承受潜在的损失。`;
+            }
+            
+            // 实际投入保证金超限提示
+            if (actualInvestment === data.principal && kellyPercentage > 0) {
+                recommendation += ' 注意：计算得出的实际投入保证金已达到本金上限，可能存在较高风险。';
+            }
+            
+            // 手数调整提示
+            if (isAdjusted) {
+                recommendation += ` 注意：计算手数已调整至最低0.01手，可能会影响风险收益比。`;
+            }
+            
+            // 投资品种相关信息
+            let instrumentDisplay = '未选择';
+            switch(data.instrument) {
+                case 'BTCUSD':
+                    instrumentDisplay = 'BTCUSD（比特币）';
+                    break;
+                case 'XAUUSD':
+                    instrumentDisplay = 'XAUUSD（黄金）';
+                    break;
+                case 'XBRUSD':
+                    instrumentDisplay = 'XBRUSD（原油）';
+                    break;
+                default:
+                    instrumentDisplay = '空值';
+            }
+            
+            return {
+                kellyPercentage: kellyPercentage * 100, // 转换为百分比显示
+                optimalBet: optimalBet,
+                actualInvestment: actualInvestment,
+                singleLossAmount: singleLossAmount,
+                maxConsecutiveLoss: maxConsecutiveLoss,
+                remainingCapitalPercent: remainingCapitalPercent,
+                consecutiveLossProbability: consecutiveLossProbability,
+                instrument: instrumentDisplay,
+                currentPrice: data.currentPrice,
+                positionSize: positionSize,
+                isAdjusted: isAdjusted,
+                lotMargin: lotMargin,
+                formulaText: formulaText,
+                recommendation: recommendation
+            };
+        }
+ 
+        // 显示计算结果
+        function displayResults(inputData, results) {
+            document.getElementById('kellyPercentage').textContent = results.kellyPercentage.toFixed(2) + '%';
+            document.getElementById('optimalBet').textContent = '¥' + results.optimalBet.toFixed(2);
+            document.getElementById('actualInvestment').textContent = '¥' + results.actualInvestment.toFixed(2);
+            document.getElementById('singleLossAmount').textContent = '¥' + results.singleLossAmount.toFixed(2);
+            document.getElementById('maxConsecutiveLoss').textContent = '¥' + results.maxConsecutiveLoss.toFixed(2);
+            document.getElementById('remainingCapital').textContent = results.remainingCapitalPercent.toFixed(2) + '%';
+            document.getElementById('consecutiveLossProbability').textContent = results.consecutiveLossProbability.toFixed(4) + '%';
+            
+            // 显示投资品种相关结果
+            document.getElementById('resultInstrument').textContent = results.instrument;
+            document.getElementById('resultPrice').textContent = results.currentPrice > 0 ? results.currentPrice.toFixed(2) : '-';
+          
+            // 控制投资品种相关结果的显示与隐藏
+            const instrumentResults = document.getElementById('instrumentResults');
+            if (results.instrument === '空值' || !results.instrument) {
+                instrumentResults.classList.add('hidden');
+            } else {
+                instrumentResults.classList.remove('hidden');
+            }
+          
+            // 显示手数结果，保留两位小数
+            document.getElementById('positionSize').textContent = results.positionSize > 0 ? 
+                results.positionSize.toFixed(2) + ' 手' : '-';
+                
+            // 显示手数调整提示
+            document.getElementById('lotSizeWarning').classList.toggle('hidden', !results.isAdjusted);
+            
+            // 显示当前手数的保证金
+            document.getElementById('lotMargin').textContent = results.lotMargin > 0 ? 
+                '¥' + results.lotMargin.toFixed(2) : '-';
+            
+            // 显示当前使用的计算公式
+            document.getElementById('calculationFormula').textContent = 
+                `计算公式：${results.formulaText || '请选择投资品种并输入价格'}`;
+            
+            document.getElementById('recommendation').textContent = results.recommendation;
+        }
+
+        // 显示通知提示
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            
+            // 设置样式
+            toast.className = 'fixed bottom-6 right-6 px-6 py-3 rounded-lg shadow-lg transform translate-y-0 opacity-100 transition-all duration-300 flex items-center space-x-2 z-50';
+            
+            // 根据类型设置不同背景色和发光效果
+            if (type === 'success') {
+                toast.classList.add('bg-primary/20', 'border', 'border-primary', 'text-primary', 'border-glow');
+                toast.innerHTML = '<i class="fa fa-check-circle"></i><span>' + message + '</span>';
+            } else if (type === 'warning') {
+                toast.classList.add('bg-secondary/20', 'border', 'border-secondary', 'text-secondary', 'border-glow-pink');
+                toast.innerHTML = '<i class="fa fa-exclamation-triangle"></i><span>' + message + '</span>';
+            } else if (type === 'error') {
+                toast.classList.add('bg-secondary/30', 'border', 'border-secondary', 'text-white', 'border-glow-pink');
+                toast.innerHTML = '<i class="fa fa-times-circle"></i><span>' + message + '</span>';
+            } else {
+                toast.classList.add('bg-primary/20', 'border', 'border-primary', 'text-primary', 'border-glow');
+                toast.innerHTML = '<i class="fa fa-info-circle"></i><span>' + message + '</span>';
+            }
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
