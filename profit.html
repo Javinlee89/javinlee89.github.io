@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄金交易策略分析报告</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei,sans-serif}
+        body{background:#f5f7fa;padding:20px;color:#333}
+        .container{max-width:1100px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.05);padding:30px}
+        .title{text-align:center;font-size:24px;font-weight:700;color:#2E86AB;margin-bottom:8px}
+        .subtitle{text-align:center;color:#666;margin-bottom:30px}
+        .section{margin-bottom:40px}
+        .section h2{font-size:18px;margin-bottom:15px;padding-bottom:6px;border-bottom:2px solid #2E86AB;display:inline-block}
+        .main-table{width:100%;border-collapse:collapse;background:#fff}
+        .main-table th{background:#2E86AB;color:#fff;padding:10px;font-size:14px}
+        .main-table td{padding:9px;text-align:center;border:1px solid #eee;font-size:13px}
+        .main-table tr:nth-child(even){background:#fafbfc}
+        .profit{color:#27ae60;font-weight:700}
+        .loss{color:#e74c3c;font-weight:700}
+        .chart-box{width:100%;text-align:center;margin:20px 0}
+        .chart-box img{max-width:100%;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title">黄金（XAUUSD）交易策略分析报告</div>
+    <div class="subtitle">数据周期：2025-04-23 至 2025-05-15</div>
+
+    <div class="section">
+        <h2>📌 核心统计指标</h2>
+        <table class="main-table">
+            <tr>
+                <th>项目</th>
+                <th>数值</th>
+            </tr>
+            <tr>
+                <td>做多笔数</td>
+                <td>32</td>
+            </tr>
+            <tr>
+                <td>做空笔数</td>
+                <td>28</td>
+            </tr>
+            <tr>
+                <td>盈利笔数</td>
+                <td>46</td>
+            </tr>
+            <tr>
+                <td>亏损笔数</td>
+                <td>14</td>
+            </tr>
+            <tr>
+                <td>胜率</td>
+                <td>76.67%</td>
+            </tr>
+            <tr>
+                <td>每日交易笔数</td>
+                <td>2.86 笔/天</td>
+            </tr>
+            <tr>
+                <td>盈亏比</td>
+                <td>2.22</td>
+            </tr>
+            <tr>
+                <td>总盈利</td>
+                <td class="profit">14,339,741.56 元</td>
+            </tr>
+            <tr>
+                <td>总亏损</td>
+                <td class="loss">1,968,891.00 元</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>📈 净值增长走势</h2>
+        <div class="chart-box">
+            <img src="https://p26-flow-imagex-download-sign.byteimg.com/ocean-cloud-tos/ci/38426830698714882/%25E5%2587%2580%25E5%2580%25BC%25E5%25A2%259E%25E9%2595%25BF%25E8%25B5%25B0%25E5%258A%25BF%25E5%259B%25BE.png~tplv-a9rns2rl98-image-face-cut:4164:3568.png?lk3s=8e244e95&rcl=2026052003295703D1FF963E007C903F34&rrcfp=8a172a1a&x-expires=1779823849&x-signature=OR50zrqgLxqRPlarsweiJXk1OCg%3D" alt="净值走势">
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📊 每笔订单详情</h2>
+        <div style="overflow-x:auto">
+        <table class="main-table">
+            <tr>
+                <th>订单号</th>
+                <th>方向</th>
+                <th>Lot</th>
+                <th>开仓时间</th>
+                <th>平仓时间</th>
+                <th>盈亏</th>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>buy</td>
+                <td>1.00</td>
+                <td>2025-04-23 19:10</td>
+                <td>2025-04-24 02:59</td>
+                <td class="profit">5065.03</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>sell</td>
+                <td>1.00</td>
+                <td>2025-04-24 06:17</td>
+                <td>2025-04-24 06:59</td>
+                <td class="loss">-744.00</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>buy</td>
+                <td>1.00</td>
+                <td>2025-04-24 07:12</td>
+                <td>2025-04-24 10:59</td>
+                <td class="loss">-955.00</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>sell</td>
+                <td>1.00</td>
+                <td>2025-04-24 13:01</td>
+                <td>2025-04-24 13:59</td>
+                <td class="profit">1608.00</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>buy</td>
+                <td>1.00</td>
+                <td>2025-04-24 17:30</td>
+                <td>2025-04-24 22:59</td>
+                <td class="profit">2792.00</td>
+            </tr>
+            <tr>
+                <td>11</td>
+                <td>sell</td>
+                <td>1.00</td>
+                <td>2025-04-25 01:52</td>
+                <td>2025-04-25 13:59</td>
+                <td class="profit">6294.00</td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td>sell</td>
+                <td>1.00</td>
+                <td>2025-04-25 13:01</td>
+                <td>2025-04-25 13:59</td>
+                <td class="profit">477.00</td>
+            </tr>
+            <tr>
+                <td>14</td>
+                <td>buy</td>
+                <td>2.00</td>
+                <td>2025-04-25 17:19</td>
+                <td>2025-04-25 20:59</td>
+                <td class="profit">5662.00</td>
+            </tr>
+            <tr>
+                <td>15</td>
+                <td>sell</td>
+                <td>2.00</td>
+                <td>2025-04-28 01:24</td>
+                <td>2025-04-28 04:46</td>
+                <td class="loss">-146.00</td>
+            </tr>
+            <tr>
+                <td>16</td>
+                <td>sell</td>
+                <td>2.00</td>
+                <td>2025-04-28 09:32</td>
+                <td>2025-04-28 09:59</td>
+                <td class="profit">376.00</td>
+            </tr>
+            <tr>
+                <td>17</td>
+                <td>buy</td>
+                <td>2.00</td>
+                <td>2025-04-28 11:05</td>
+                <td>2025-04-28 20:59</td>
+                <td class="profit">9946.00</td>
+            </tr>
+            <tr>
+                <td>20</td>
+                <td>sell</td>
+                <td>4.00</td>
+                <td>2025-04-29 00:52</td>
+                <td>2025-04-29 04:59</td>
+                <td class="profit">8300.00</td>
+            </tr>
+            <tr>
+                <td>21</td>
+                <td>buy</td>
+                <td>4.00</td>
+                <td>2025-04-29 13:11</td>
+                <td>2025-04-29 17:52</td>
+                <td class="profit">1624.00</td>
+            </tr>
+            <tr>
+                <td>22</td>
+                <td>buy</td>
+                <td>4.00</td>
+                <td>2025-04-29 14:00</td>
+                <td>2025-04-29 17:52</td>
+                <td class="profit">5556.00</td>
+            </tr>
+            <tr>
+                <td>23</td>
+                <td>sell</td>
+                <td>5.00</td>
+                <td>2025-04-30 01:04</td>
+                <td>2025-04-30 04:59</td>
+                <td class="profit">805.00</td>
+            </tr>
+            <tr>
+                <td>24</td>
+                <td>buy</td>
+                <td>5.00</td>
+                <td>2025-04-30 05:12</td>
+                <td>2025-04-30 06:59</td>
+                <td class="loss">-3560.00</td>
+            </tr>
+            <tr>
+                <td>25</td>
+                <td>sell</td>
+                <td>5.00</td>
+                <td>2025-04-30 06:21</td>
+                <td>2025-04-30 11:59</td>
+                <td class="profit">16505.00</td>
+            </tr>
+            <tr>
+                <td>27</td>
+                <td>buy</td>
+                <td>7.00</td>
+                <td>2025-04-30 12:16</td>
+                <td>2025-04-30 17:59</td>
+                <td class="profit">14994.00</td>
+            </tr>
+            <tr>
+                <td>28</td>
+                <td>sell</td>
+                <td>8.00</td>
+                <td>2025-04-30 18:07</td>
+                <td>2025-05-01 12:23</td>
+                <td class="profit">71176.72</td>
+            </tr>
+            <tr>
+                <td>29</td>
+                <td>sell</td>
+                <td>8.00</td>
+                <td>2025-05-01 09:43</td>
+                <td>2025-05-01 12:23</td>
+                <td class="profit">5488.00</td>
+            </tr>
+            <tr>
+                <td>30</td>
+                <td>buy</td>
+                <td>8.00</td>
+                <td>2025-05-01 13:13</td>
+                <td>2025-05-02 12:30</td>
+                <td class="profit">18896.08</td>
+            </tr>
+            <tr>
+                <td>31</td>
+                <td>buy</td>
+                <td>15.00</td>
+                <td>2025-05-01 15:45</td>
+                <td>2025-05-02 12:30</td>
+                <td class="profit">69705.15</td>
+            </tr>
+            <tr>
+                <td>32</td>
+                <td>buy</td>
+                <td>8.00</td>
+                <td>2025-05-01 18:34</td>
+                <td>2025-05-02 12:30</td>
+                <td class="profit">24400.08</td>
+            </tr>
+            <tr>
+                <td>33</td>
+                <td>buy</td>
+                <td>8.00</td>
+                <td>2025-05-02 02:03</td>
+                <td>2025-05-02 12:30</td>
+                <td class="profit">10712.00</td>
+            </tr>
+            <tr>
+                <td>34</td>
+                <td>sell</td>
+                <td>25.00</td>
+                <td>2025-05-02 12:30</td>
+                <td>2025-05-02 12:59</td>
+                <td class="profit">4650.00</td>
+            </tr>
+            <tr>
+                <td>35</td>
+                <td>sell</td>
+                <td>25.00</td>
+                <td>2025-05-02 14:57</td>
+                <td>2025-05-02 18:59</td>
+                <td class="profit">92050.00</td>
+            </tr>
+            <tr>
+                <td>38</td>
+                <td>buy</td>
+                <td>35.00</td>
+                <td>2025-05-04 22:00</td>
+                <td>2025-05-06 14:59</td>
+                <td class="profit">504420.70</td>
+            </tr>
+            <tr>
+                <td>39</td>
+                <td>buy</td>
+                <td>20.00</td>
+                <td>2025-05-05 01:02</td>
+                <td>2025-05-06 14:59</td>
+                <td class="profit">274640.20</td>
+            </tr>
+            <tr>
+                <td>40</td>
+                <td>buy</td>
+                <td>20.00</td>
+                <td>2025-05-05 05:10</td>
+                <td>2025-05-06 14:59</td>
+                <td class="profit">249660.20</td>
+            </tr>
+            <tr>
+                <td>41</td>
+                <td>buy</td>
+                <td>40.00</td>
+                <td>2025-05-05 18:09</td>
+                <td>2025-05-06 14:59</td>
+                <td class="profit">273320.40</td>
+            </tr>
+            <tr>
+                <td>42</td>
+                <td>buy</td>
+                <td>50.00</td>
+                <td>2025-05-06 01:01</td>
+                <td>2025-05-06 14:59</td>
+                <td class="profit">241250.00</td>
+            </tr>
+            <tr>
+                <td>43</td>
+                <td>buy</td>
+                <td>50.00</td>
+                <td>2025-05-06 07:01</td>
+                <td>2025-05-06 14:59</td>
+                <td class="profit">82150.00</td>
+            </tr>
+            <tr>
+                <td>44</td>
+                <td>buy</td>
+                <td>100.00</td>
+                <td>2025-05-06 15:24</td>
+                <td>2025-05-06 22:07</td>
+                <td class="profit">122200.00</td>
+            </tr>
+            <tr>
+                <td>45</td>
+                <td>sell</td>
+                <td>100.00</td>
+                <td>2025-05-06 23:00</td>
+                <td>2025-05-07 01:03</td>
+                <td class="loss">-57497.00</td>
+            </tr>
+            <tr>
+                <td>47</td>
+                <td>buy</td>
+                <td>200.00</td>
+                <td>2025-05-07 05:51</td>
+                <td>2025-05-07 07:59</td>
+                <td class="loss">-22600.00</td>
+            </tr>
+            <tr>
+                <td>49</td>
+                <td>buy</td>
+                <td>300.00</td>
+                <td>2025-05-07 09:59</td>
+                <td>2025-05-07 14:00</td>
+                <td class="profit">609900.00</td>
+            </tr>
+            <tr>
+                <td>50</td>
+                <td>buy</td>
+                <td>150.00</td>
+                <td>2025-05-07 13:45</td>
+                <td>2025-05-07 14:00</td>
+                <td class="loss">-66450.00</td>
+            </tr>
+            <tr>
+                <td>51</td>
+                <td>sell</td>
+                <td>150.00</td>
+                <td>2025-05-07 14:20</td>
+                <td>2025-05-07 18:08</td>
+                <td class="loss">-270150.00</td>
+            </tr>
+            <tr>
+                <td>52</td>
+                <td>sell</td>
+                <td>150.00</td>
+                <td>2025-05-07 19:14</td>
+                <td>2025-05-07 23:42</td>
+                <td class="loss">-45300.00</td>
+            </tr>
+            <tr>
+                <td>53</td>
+                <td>buy</td>
+                <td>200.00</td>
+                <td>2025-05-07 23:43</td>
+                <td>2025-05-08 04:10</td>
+                <td class="profit">313806.00</td>
+            </tr>
+            <tr>
+                <td>54</td>
+                <td>sell</td>
+                <td>150.00</td>
+                <td>2025-05-08 05:16</td>
+                <td>2025-05-08 10:24</td>
+                <td class="profit">376500.00</td>
+            </tr>
+            <tr>
+                <td>55</td>
+                <td>buy</td>
+                <td>150.00</td>
+                <td>2025-05-08 12:16</td>
+                <td>2025-05-08 14:01</td>
+                <td class="profit">15900.00</td>
+            </tr>
+            <tr>
+                <td>56</td>
+                <td>sell</td>
+                <td>150.00</td>
+                <td>2025-05-08 15:26</td>
+                <td>2025-05-08 22:05</td>
+                <td class="profit">433350.00</td>
+            </tr>
+            <tr>
+                <td>57</td>
+                <td>sell</td>
+                <td>150.00</td>
+                <td>2025-05-08 16:04</td>
+                <td>2025-05-08 22:05</td>
+                <td class="profit">193350.00</td>
+            </tr>
+            <tr>
+                <td>58</td>
+                <td>sell</td>
+                <td>150.00</td>
+                <td>2025-05-09 01:25</td>
+                <td>2025-05-09 01:59</td>
+                <td class="profit">153300.00</td>
+            </tr>
+            <tr>
+                <td>60</td>
+                <td>buy</td>
+                <td>300.00</td>
+                <td>2025-05-09 03:02</td>
+                <td>2025-05-09 19:11</td>
+                <td class="profit">689400.00</td>
+            </tr>
+            <tr>
+                <td>62</td>
+                <td>sell</td>
+                <td>400.00</td>
+                <td>2025-05-09 19:11</td>
+                <td>2025-05-11 22:59</td>
+                <td class="profit">2438012.00</td>
+            </tr>
+            <tr>
+                <td>64</td>
+                <td>sell</td>
+                <td>350.00</td>
+                <td>2025-05-12 07:00</td>
+                <td>2025-05-12 11:02</td>
+                <td class="profit">1956500.00</td>
+            </tr>
+            <tr>
+                <td>63</td>
+                <td>buy</td>
+                <td>400.00</td>
+                <td>2025-05-12 13:00</td>
+                <td>2025-05-12 16:59</td>
+                <td class="loss">-478800.00</td>
+            </tr>
+            <tr>
+                <td>66</td>
+                <td>sell</td>
+                <td>400.00</td>
+                <td>2025-05-12 17:08</td>
+                <td>2025-05-12 18:59</td>
+                <td class="loss">-330000.00</td>
+            </tr>
+            <tr>
+                <td>67</td>
+                <td>buy</td>
+                <td>400.00</td>
+                <td>2025-05-12 22:02</td>
+                <td>2025-05-13 01:31</td>
+                <td class="loss">-639596.00</td>
+            </tr>
+            <tr>
+                <td>68</td>
+                <td>buy</td>
+                <td>400.00</td>
+                <td>2025-05-13 04:39</td>
+                <td>2025-05-13 07:15</td>
+                <td class="profit">534800.00</td>
+            </tr>
+            <tr>
+                <td>69</td>
+                <td>sell</td>
+                <td>400.00</td>
+                <td>2025-05-13 12:02</td>
+                <td>2025-05-13 14:09</td>
+                <td class="profit">364000.00</td>
+            </tr>
+            <tr>
+                <td>70</td>
+                <td>buy</td>
+                <td>400.00</td>
+                <td>2025-05-13 15:35</td>
+                <td>2025-05-14 00:01</td>
+                <td class="loss">-21596.00</td>
+            </tr>
+            <tr>
+                <td>71</td>
+                <td>buy</td>
+                <td>300.00</td>
+                <td>2025-05-13 20:26</td>
+                <td>2025-05-14 00:01</td>
+                <td class="loss">-31497.00</td>
+            </tr>
+            <tr>
+                <td>72</td>
+                <td>sell</td>
+                <td>400.00</td>
+                <td>2025-05-14 00:09</td>
+                <td>2025-05-14 06:06</td>
+                <td class="profit">399600.00</td>
+            </tr>
+            <tr>
+                <td>73</td>
+                <td>buy</td>
+                <td>400.00</td>
+                <td>2025-05-14 07:11</td>
+                <td>2025-05-14 08:59</td>
+                <td class="profit">283200.00</td>
+            </tr>
+            <tr>
+                <td>76</td>
+                <td>sell</td>
+                <td>400.00</td>
+                <td>2025-05-14 11:48</td>
+                <td>2025-05-14 16:54</td>
+                <td class="profit">1586400.00</td>
+            </tr>
+            <tr>
+                <td>78</td>
+                <td>sell</td>
+                <td>500.00</td>
+                <td>2025-05-14 18:04</td>
+                <td>2025-05-14 19:37</td>
+                <td class="profit">90000.00</td>
+            </tr>
+            <tr>
+                <td>80</td>
+                <td>sell</td>
+                <td>500.00</td>
+                <td>2025-05-15 01:44</td>
+                <td>2025-05-15 07:59</td>
+                <td class="profit">1777000.00</td>
+            </tr>
+        </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
